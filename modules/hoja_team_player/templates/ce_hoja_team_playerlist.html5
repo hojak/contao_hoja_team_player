@@ -1,0 +1,303 @@
+<?php
+	$small_size = $this->size ? unserialize ( $this->size ) : array ( 100, 120, "proportional");
+	if (! $small_size[0] ) $small_size[0] = 100;
+	if (! $small_size[1]) $small_size[1]= 120;
+	
+
+	$detail_size = $this->hoja_detail_size ? unserialize ( $this->hoja_detail_size ) : array ( 300, 400, "proportional");
+	if (! $detail_size[0] ) $detail_size[0] = 300;
+	if (! $detail_size[1]) $detail_size[1]= 400;
+	
+	//
+	$objPage404 = \PageModel::find404ByPid($objPage->rootId);
+		
+?>
+
+
+
+<div class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+
+<?php if ( $this->not_found ): ?>
+<h1>Spieler nicht gefunden!</h1>
+<hr>
+
+<?php elseif ( $this->player_details ): ?>
+
+<div class="player_details">
+
+<h1><?= $this->player_details->prename ?>
+<?php if ( $this->player_details->nickname): ?> <i>&ndash; <?= $this->player_details->nickname ?>&ndash;</i> <?php endif; ?>
+<?= $this->player_details->name ?></h1>
+
+{{image::<?= $this->player_details->image ?>?width=<?= $detail_size[0] ?>&heigth=<?= $detail_size[1]?>&mode=<?= $detail_size[2] ?>&alt=<?= urlencode ( "Foto: ". $this->player_details->name . ", " . $this->player_details->prename ) ?>}}
+
+
+<table>
+	<tr class="hr">
+		<th>Name</th>
+		<td><?= $this->player_details->prename ?> <?= $this->player_details->name ?></td>
+	</tr>
+	<?php if ( $this->player_details->nickname): ?>
+	<tr>
+		<th>Spitzname</th>
+		<td><?= $this->player_details->nickname ?></td>
+	</tr>
+	<?php endif ;?>
+	<?php if ( $this->player_details->type == "player"): ?>
+	<tr>
+		<th>Nummer</th>
+		<td><?= $this->player_details->number ?></td>
+	</tr>
+	<?php endif ;?>
+	<tr>
+		<th>Position</th>
+		<td>
+			<?php if ( $this->player_details->type == "trainer" ): ?>
+			Trainer
+			<?php elseif ( $this->player_details->type == "co-trainer" ): ?>
+			Co-Trainer
+			<?php else: ?>
+			<?= $this->player_details->position ?>
+			<?php endif; ?>
+		</td>
+	</tr>
+	
+	<?php if ( $this->player_details->birthday):?>
+	<tr<?= hoja_hr()?>>
+		<th>Geboren</th>
+		<td>
+			<?= $this->parseDate ("d.m.Y", $this->player_details->birthday ) ?>
+			<?php if ( $this->player_details->city_of_birth): ?>
+			in <?= $this->player_details->city_of_birth ?>
+			<?php endif; ?>
+		</td>
+	</tr>
+	<?php endif ;?>
+	<?php if ( $this->player_details->nationality): ?>
+	<tr<?= hoja_hr()?>>
+		<th>Nationalität</th>
+		<td><?= $this->player_details->nationality ?></td>
+	</tr>
+	<?php endif ;?>
+	<?php if ( $this->player_details->height_cm): $hr = true;?>
+	<tr<?= hoja_hr()?>>
+		<th>Größe</th>
+		<td><?= $this->player_details->height_cm ?> cm</td>
+	</tr>
+	<?php endif ;?>
+
+	<?php hoja_hr_reset() ?>
+
+	<?php if ( $this->player_details->profession): $hr = true;?>
+	<tr<?= hoja_hr()?>>
+		<th>Beruf</th>
+		<td><?= $this->player_details->profession ?></td>
+	</tr>
+	<?php endif ;?>
+	<?php if ( $this->player_details->hobbies): $hr = true;?>
+	<tr<?= hoja_hr()?>>
+		<th>Hobbies</th>
+		<td><?= $this->player_details->hobbies ?></td>
+	</tr>
+	<?php endif ;?>
+	
+	<?php hoja_hr_reset() ?>
+
+	<?php if ( $this->player_details->in_club_since): $hr = true;?>
+	<tr<?= hoja_hr()?>>
+		<th>Beim Verein seit</th>
+		<td><?= $this->player_details->in_club_since ?></td>
+	</tr>
+	<?php endif ;?>
+	<?php if ( $this->player_details->previous_clubs): $hr = true;?>
+	<tr<?= hoja_hr()?>>
+		<th>Vorherige Vereine</th>
+		<td><?= $this->player_details->previous_clubs?></td>
+	</tr>
+	<?php endif ;?>
+	
+	
+	<?php 
+		$comments = $this->player_details->comments;
+		if ( $comments ) {
+			$comments = unserialize ( $comments ); 
+			for ( $i=0; $i<sizeof ( $comments ); $i++)
+				if ( ! $comments[$i]['value'])
+					array_splice($comments, $i, 1);
+		}
+		if ( $comments ):
+	?>
+	<tr class="hr">
+		<th>Kommentare <br >(aus der Mannschaft)</th>
+		<td>
+			<ul>
+			<?php foreach ( $comments as $comment ): ?>
+				<li><?= $comment['value'] ?></li>
+			<?php endforeach; ?>
+			</ul>
+		</td>
+	</tr>
+	<?php endif; ?>
+
+	
+	<?php 
+		hoja_hr_reset();
+		
+		$attributes = $this->player_details->other_attributes;
+		if ( $attributes ) {
+			$attributes = unserialize ( $attributes ); 
+			for ( $i=0; $i<sizeof ( $attributes ); $i++)
+				if ( ! $attributes[$i]['value'])
+					array_splice($attributes, $i, 1);
+		}
+		if ( $attributes ):
+	?>
+
+	<?php foreach ( $attributes as $attr ) : ?>
+	<tr<?= hoja_hr()?>>
+		<th><?= $attr['name'] ?></th>
+		<td><?= $attr['value'] ?></td>
+	</tr>
+	<?php endforeach; ?>
+	
+	<?php endif; ?>
+	
+</table>
+
+
+
+<?php if ( $this->player_details->free_text ): ?>
+<div class="free_text">
+<?= $this->player_details->free_text ?>
+</div>
+<?php endif; ?>
+
+</div>
+
+<hr>
+
+
+<?php endif; ?>
+
+
+
+<?php if ( $this->headline ) : ?>
+<<?= $this->hl ?>><?= $this->headline ?></<?= $this->hl ?>>
+<?php endif; ?>
+
+
+	<div class="player_list_block">
+		
+		<?php if ( $this->team_list['trainers'] ): ?>
+			<h2 class="position">Trainer</h2>			
+			<?php print_list ( $this->team_list['trainers'], $small_size, "T", "Trainer"); ?>
+		<?php endif; ?>
+	
+		<?php if ( $this->team_list['cos'] ): ?>
+			<h2 class="position">Co-Trainer</h2>			
+			<?php print_list ( $this->team_list['cos'], $small_size, "Co", "Co-Trainer"); ?>
+		<?php endif; ?>
+		
+		<?php if ( ($this->team_list['trainers'] || $this->team_list['cos']) && $this->team_list['players']): ?>
+		<div class="spacer">&nbsp;</div>
+		<?php endif; ?>
+	
+		<?php if ( $this->team_list['players'] ): ?>
+			<h2 class="position">Spieler</h2>			
+			<?php print_list ( $this->team_list['players'], $small_size); ?>
+		<?php endif; ?>
+		
+		
+		
+		<?php if ( $this->team_list['staff'] ): ?>
+			<div class="spacer">&nbsp;</div>
+			<h2 class="position">Unterstützung</h2>			
+			<?php print_list ( $this->team_list['staff'], $small_size, "S" ); ?>
+		<?php endif; ?>
+	
+	
+	
+	</div>
+
+</div>
+
+
+<?php
+	// handle player detail view!
+	
+?>
+
+	
+<?php	
+	function getFrontendUrl( $pageId , $params )
+	{
+		global $objPage;
+		$retval = "";
+
+		if ( ( $jumpTo = \PageModel::findByPk( $pageId ) ) !== null )
+		{
+			$retval = \Controller::generateFrontendUrl( $jumpTo->row() );
+			$retval .= ( strstr( $retval , "?" ) ? "&" : "?" ) . $params;
+		}
+
+		return $retval;
+	}
+
+?>
+
+
+
+
+
+
+<?php
+
+	function print_list ( $list, $imgsize, $number = null, $position = null ) 
+	{
+		global $objPage;
+		$base = $objPage->row();
+	
+		foreach ( $list as $member )
+		{
+		
+		if ( ! $number ) $number = $member['number'];
+		if ( ! $position ) $position = $member['position'];
+?>
+			<div class="player_short">
+				<h3 class="number"><?= $number ?></h3>
+				<div class="name">
+					<a href="<?= \Controller::generateFrontendUrl ( $base, "/".$member['id'] . "_".$member['prename']."_".$member['name'] ) ?>">
+					<?= $member['prename'] ?>
+					<?php if ( $member['nickname']): ?><i>&ndash;<?= $member['nickname'] ?>&ndash;</i> <?php endif; ?>
+					<?= $member['name'] ?>
+					</a>
+				</div>
+				<div class="position"><?= $position ?></div>
+					<a href="<?= \Controller::generateFrontendUrl ( $base, "/".$member['id'] . "_".$member['prename']."_".$member['name'] ) ?>">
+				{{image::<?= $member['image'] ?>?width=<?= $imgsize[0] ?>&heigth=<?= $imgsize[1]?>&mode=<?= $imgsize[2] ?>&alt=<?= urlencode ( "Foto: ". $member['name'] . ", " . $member['prename'] ) ?>}}
+				</a>
+			</div>
+
+<?php
+		}
+	}
+	
+	
+	function hoja_hr_reset () {
+		global $hoja_hr_flag;
+		$hoja_hr_flag = false;
+	}
+	
+	function hoja_hr () {
+		global $hoja_hr_flag;
+		
+		if ( $hoja_hr_flag )
+			return "";
+		else {
+			$hoja_hr_flag = true;
+			return ' class="hr"';
+		}
+	}
+	
+	
+	
