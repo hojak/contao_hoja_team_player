@@ -3,17 +3,11 @@
 	if (! $small_size[0] ) $small_size[0] = 100;
 	if (! $small_size[1]) $small_size[1]= 120;
 	
-
 	$detail_size = $this->hoja_detail_size ? unserialize ( $this->hoja_detail_size ) : array ( 300, 400, "proportional");
 	if (! $detail_size[0] ) $detail_size[0] = 300;
 	if (! $detail_size[1]) $detail_size[1]= 400;
-	
-	//
-	$objPage404 = \PageModel::find404ByPid($objPage->rootId);
-		
+			
 ?>
-
-
 
 <div class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
 
@@ -256,12 +250,13 @@
 	{
 		global $objPage;
 		$base = $objPage->row();
-	
+		
 		foreach ( $list as $member )
 		{
 		
 		if ( ! $number ) $number = $member['number'];
 		if ( ! $position ) $position = $member['position'];
+		
 ?>
 			<div class="player_short">
 				<h3 class="number"><?= $number ?></h3>
@@ -274,7 +269,13 @@
 				</div>
 				<div class="position"><?= $position ?></div>
 					<a href="<?= \Controller::generateFrontendUrl ( $base, "/".$member['id'] . "_".$member['prename']."_".$member['name'] ) ?>">
-				{{image::<?= $member['image'] ?>?width=<?= $imgsize[0] ?>&heigth=<?= $imgsize[1]?>&mode=<?= $imgsize[2] ?>&alt=<?= urlencode ( "Foto: ". $member['name'] . ", " . $member['prename'] ) ?>}}
+					<?php
+						$image = $member['image']
+								.'?width='. $imgsize[0]
+								.'&height='. $imgsize[1]
+								.'&mode='.$imgsize[2]
+					?>
+					{{image::<?= $image ?>}}
 				</a>
 			</div>
 
