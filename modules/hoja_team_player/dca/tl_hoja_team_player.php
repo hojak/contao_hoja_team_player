@@ -158,8 +158,9 @@ $GLOBALS['TL_DCA']['tl_hoja_team_player'] = array
 			'exclude'				=> true,
 			'search'				=> true,
 			'sorting'				=> true,
-			'eval'					=> array('maxlength'=>3, 'tl_class' => 'w50'),
-			'sql'					=> 'smallint(5) unsigned NULL',
+			'eval'					=> array('maxlength'=>5, 'tl_class' => 'w50'),
+			//'sql'					=> 'smallint(5) unsigned NULL',
+			'sql'					=> 'varchar(5) NULL'
 		),  
 		'position' => array
 		(
