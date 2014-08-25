@@ -21,10 +21,19 @@
 
 <h1><?= $this->player_details->prename ?>
 <?php if ( $this->player_details->nickname): ?> <i>&ndash; <?= $this->player_details->nickname ?>&ndash;</i> <?php endif; ?>
-<?= $this->player_details->name ?></h1>
+<?= " " . $this->player_details->name ?></h1>
 
-{{image::<?= $this->player_details->image ?>?width=<?= $detail_size[0] ?>&heigth=<?= $detail_size[1]?>&mode=<?= $detail_size[2] ?>&alt=<?= urlencode ( "Foto: ". $this->player_details->name . ", " . $this->player_details->prename ) ?>}}
+<?php 
+	if ( $imgFile = $this->player_details->image ):
 
+		if ( Validator::isUuid($imgFile) ) {
+			$objFile = \FilesModel::findByPk($imgFile);
+			$imgFile = $objFile->path;
+		} 
+?>
+	
+{{image::<?= $imgFile ?>?width=<?= $detail_size[0] ?>&heigth=<?= $detail_size[1]?>&mode=<?= $detail_size[2] ?>&alt=<?= urlencode ( "Foto: ". $this->player_details->name . ", " . $this->player_details->prename ) ?>}}
+<?php endif; ?>
 
 <table>
 	<tr class="hr">
@@ -253,13 +262,12 @@
 		
 		foreach ( $list as $member )
 		{
-		
-		if ( ! $number ) $number = $member['number'];
-		if ( ! $position ) $position = $member['position'];
-		
+			$show_number = $number ? $number : $member['number'];
+			$show_position = $position ? $position : $member['position'];
+			
 ?>
 			<div class="player_short">
-				<h3 class="number"><?= $number ?></h3>
+				<h3 class="number"><?= $show_number ?></h3>
 				<div class="name">
 					<a href="<?= \Controller::generateFrontendUrl ( $base, "/".$member['id'] . "_".$member['prename']."_".$member['name'] ) ?>">
 					<?= $member['prename'] ?>
@@ -267,15 +275,23 @@
 					<?= $member['name'] ?>
 					</a>
 				</div>
-				<div class="position"><?= $position ?></div>
+				<div class="position"><?= $show_position ?></div>
 					<a href="<?= \Controller::generateFrontendUrl ( $base, "/".$member['id'] . "_".$member['prename']."_".$member['name'] ) ?>">
 					<?php
-						$image = $member['image']
-								.'?width='. $imgsize[0]
-								.'&height='. $imgsize[1]
-								.'&mode='.$imgsize[2]
+						if ( $member['image']):
+							if ( Validator::isUuid($member['image']) ) {
+								$objFile = \FilesModel::findByPk($member['image']);
+								$imgFile = $objFile->path;
+							} else {
+								$imgFile = $member['image'];
+							}
+							$image = $imgFile
+									.'?width='. $imgsize[0]
+									.'&height='. $imgsize[1]
+									.'&mode='.$imgsize[2]
 					?>
 					{{image::<?= $image ?>}}
+					<?php endif; ?>
 				</a>
 			</div>
 
