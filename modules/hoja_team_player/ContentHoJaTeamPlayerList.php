@@ -51,7 +51,10 @@ class ContentHoJaTeamPlayerList extends ContentElement
 	{
 		$players = $trainers = $cos = $staff = array ();
 		
-		$objPlayers = $this->Database->prepare("SELECT * FROM tl_hoja_team_player WHERE pid=? AND published=1 ORDER BY type,number,name,prename")->execute( $id );
+		$objPlayers = $this->Database->prepare(
+			"SELECT * FROM tl_hoja_team_player "
+			."WHERE pid=? AND published=1 "
+			."ORDER BY type,cast(number as unsigned),number,name,prename")->execute( $id );
 
 		if ( $objPlayers->numRows > 0 ) {
 			while ( $objPlayers->next() ) {
