@@ -64,6 +64,14 @@
 			<?php endif; ?>
 		</td>
 	</tr>
+
+	<?php if ( $function = $this->player_details->team_function): ?>
+	<tr>
+		<th>Amt</th>
+		<td><?= $function ?></td>
+	</tr>
+	<?php endif; ?>
+
 	
 	<?php if ( $this->player_details->birthday):?>
 	<tr<?= hoja_hr()?>>
